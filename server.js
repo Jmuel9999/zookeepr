@@ -13,6 +13,9 @@ const app = express();
 app.use(express.urlencoded({extended: true}));
 // parse incoming JSON data
 app.use(express.json());
+// this allows for more middleware that instructs server to make certain files readily available
+// in this case, we used a route to the 'public' folder and instructed server to make these "static" resources (like css)
+app.use(express.static('public'));
 
 
 
@@ -143,7 +146,25 @@ const validateAnimal = function(animal) {
 // using the path module in here again to ensure we are finding the correct location for the HTML code
 // we want to display in the browser
 app.get('/', (req, res) => {
-  res.sendFile(path.join(_dirname, './public/index.html'));
+  // IMPORTANT USE 2 UNDERSCORES WITH DIRNAME FOR ABSOLUTLEY NO FUCKING REASON OR THIS WON'T WORK!!
+  res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+// this route takes us to /animals.html
+app.get('/animals', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+// this route takes us to /zookeeprs.html
+app.get('/zookeepers', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/zookeepers.html'));
+});
+
+// this route takes us to a "wildcard" which means any route that wasn't previously defined
+// The homepage will be the default for this
+// Wildcard (*) route must ALWAYS COME LAST IN THIS LIST
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 // sets up server

@@ -144,6 +144,17 @@
         "loving"
       ],
       "id": "14"
+    },
+    {
+      "name": "Jaguar",
+      "species": "cat",
+      "diet": "carnivore",
+      "personalityTraits": [
+        "hungry",
+        "anxious",
+        "goofy"
+      ],
+      "id": "15"
     }
   ]
 }

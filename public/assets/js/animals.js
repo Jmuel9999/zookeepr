@@ -1,6 +1,7 @@
 const $animalForm = document.querySelector('#animals-form');
 const $displayArea = document.querySelector('#display-area');
 
+// this function creates individual stat cards for each animal
 const printResults = resultArr => {
   console.log(resultArr);
 
@@ -31,6 +32,18 @@ const getAnimals = (formData = {}) => {
 
   console.log(queryUrl);
 
+  fetch(queryUrl)
+    .then(response => {
+      if (!response.ok) {
+        return alert('Error: ' + response.statusText);
+      }
+      return response.json();
+    })
+    .then(animalData => {
+      console.log(animalData);
+      // send this data to the printResults function to be made into separate cards
+      printResults(animalData);
+  });
 };
 
 const handleGetAnimalsSubmit = event => {
