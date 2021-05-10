@@ -116,6 +116,7 @@ app.post('/api/animals', (req, res) => {
     res.status(400).send('The animal is not properly formatted.');
   } else {
   // sending data back to the client as json format/ function in a function
+  const animal = createNewAnimal(req.body, animals);
   res.json(animal);
   }
 });
@@ -136,6 +137,12 @@ const validateAnimal = function(animal) {
   }
   return true;
 };
+
+// get index.html to be served from Express.js server
+// the single "/" brings us to the root route of the server
+app.get('/', (req, res) => {
+  res.sendFile(path.join(_dirname, './public/index.html'));
+});
 
 // sets up server
 app.listen(PORT, () => {
