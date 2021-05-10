@@ -140,6 +140,8 @@ const validateAnimal = function(animal) {
 
 // get index.html to be served from Express.js server
 // the single "/" brings us to the root route of the server
+// using the path module in here again to ensure we are finding the correct location for the HTML code
+// we want to display in the browser
 app.get('/', (req, res) => {
   res.sendFile(path.join(_dirname, './public/index.html'));
 });
