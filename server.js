@@ -48,6 +48,11 @@ const filterByQuery = function(query, animalsArray) {
   return filteredResults;
 };
 
+const findById = function(id, animalsArray) {
+  const result = animalsArray.filter(animal => animal.id === id)[0];
+  return result;
+};
+
 // adds route to animals.json
 app.get('/api/animals', (req, res) => {
     // take the query parameter and turned it into JSON
@@ -58,6 +63,20 @@ app.get('/api/animals', (req, res) => {
     // res is short for 'response' ---- Sends the animals data in json format to client
     res.json(results);
 });
+
+// different route option, PARAM routes (like this one) must come AFTER the other GET route
+app.get('/api/animals/:id', (req, res) => {
+  // findById takes in the id and array of animals and returns a SINGLE ANIMAL object (hence, ID)
+  const result = findById(req.params.id, animals);
+  // if there IS a result, then THIS
+  if (result) {
+    res.json(result);
+    // otherwise, send client the 404 'page not found' error
+  } else {
+    res.send(404);
+  }
+});
+
 // sets up server
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
