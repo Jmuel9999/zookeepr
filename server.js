@@ -1,9 +1,18 @@
 
+const fs = require('fs');
+// provides utilities for working with file and directory paths
+const path = require('path');
 const {animals} = require('./data/animals');
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 // instantiate the server
 const app = express();
+// parse incoming string or array data converting it to key/value pairings
+// app.use method mounts a function to the server that our requests pass through before getting to intended endpoint
+// these functions we can mount to our server are the MIDDLEWARE
+app.use(express.urlencoded({extended: true}));
+// parse incoming JSON data
+app.use(express.json());
 
 
 
@@ -53,6 +62,24 @@ const findById = function(id, animalsArray) {
   return result;
 };
 
+// this function accepts the POST route's req.body value and the array we want to add the data to
+const createNewAnimal = function(body, animalsArray) {
+  const animal = body;
+  animalsArray.push(animal);
+  // we are using writeFileSync (synchronous) becasue we are not working with a large data set
+  // and it does not require a callback function
+  fs.writeFileSync(
+    // we want to write to our animals.json file in the data subdirectory
+    path.join(__dirname, './data/animals.json'),
+    // save the JS array data as JSON, so we used JSON.stringify()
+    // 'null' means we don't want to edit existing data
+    // '2' indicates we want white space between our values to make it more readable
+    JSON.stringify({animals: animalsArray}, null, 2)
+  );  
+  // return finished code to post route for response
+  return animal;
+};
+
 // adds route to animals.json
 app.get('/api/animals', (req, res) => {
     // take the query parameter and turned it into JSON
@@ -76,6 +103,39 @@ app.get('/api/animals/:id', (req, res) => {
     res.send(404);
   }
 });
+
+// another method of the 'app' object that allows us to create routes
+// the fact that it says 'post' shows us that we defined a route that specifically listens to POST requests, NOT GET requests
+app.post('/api/animals', (req, res) => {
+  // set id based on what the next index of the array will be
+  req.body.id = animals.length.toString();
+
+  // if any data in req.body is incorrect, send 400 error back
+  if (!validateAnimal(req.body)) {
+    // response method to relay a message to the client making the request. Anything in 400 error range means user error and NOT server error
+    res.status(400).send('The animal is not properly formatted.');
+  } else {
+  // sending data back to the client as json format/ function in a function
+  res.json(animal);
+  }
+});
+
+// typeof operator returns a string indicating the type of the unevaluated param
+const validateAnimal = function(animal) {
+  if (!animal.name || typeof animal.name !== 'string') {
+    return false;
+  }
+  if (!animal.species || typeof animal.species !== 'string') {
+    return false;
+  }
+  if (!animal.diet || typeof animal.diet !== 'string') {
+    return false;
+  }
+  if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+    return false;
+  }
+  return true;
+};
 
 // sets up server
 app.listen(PORT, () => {
